@@ -2,45 +2,54 @@
 # Licensed under the Solderpad Hardware License, Version 0.51 (the "License");
 # you may not use this file except in compliance with the License.
 # SPDX-License-Identifier: SHL-0.51
-#
-# Course: Arquitectura de Computadores (2026)
-# 
-# Authors:
-# - Nicolás Villegas <navillegas@miuandes.cl>
 
-# Configuration
-TOP  := pochoco_soc
-PCF  := goboard.pcf
+# Cambia a sw/game.s cuando vayas a probar el juego final
+ASM_SRC := sw/game.s
+ASM_PY  := sw/assembler.py
+HEX_OUT := sw/game.hex
 
-# RTL Sources
-SRC  := $(wildcard ./rtl/*.v ./rtl/**/*.v)
+# Configuración de la FPGA (Top debe ser game_top)
+TOP     := game_top
+PCF     := goboard.pcf
+PYTHON  := python
 
-# Build Targets
-JSON := $(TOP).json
-ASC  := $(TOP).asc
-BIN  := $(TOP).bin
+# RTL Sources (Búsqueda recursiva de archivos .v)
+SRC     := $(wildcard ./rtl/*.v ./rtl/**/*.v)
 
-.PHONY: all prog clean stats
+# Targets
+JSON    := $(TOP).json
+ASC     := $(TOP).asc
+BIN     := $(TOP).bin
 
-# Default target
+.PHONY: all prog clean
+
 all: prog
 
-# Step 1: Synthesis using Yosys
-$(JSON): $(SRC)
-	yosys -p "read_verilog $(SRC); synth_ice40 -top $(TOP) -json ${TOP}.json; stat"
+# Paso 0: Ensamblar código RISC-V a Hex
+$(HEX_OUT): $(ASM_SRC) $(ASM_PY)
+	$(PYTHON) $(ASM_PY) $(ASM_SRC) $(HEX_OUT)
 
-# Step 2: Place and Route using NextPNR
+# Paso 1: Síntesis con Yosys (Depende de sw/game.hex)
+$(JSON): $(HEX_OUT) $(SRC)
+	yosys -p "read_verilog $(SRC); synth_ice40 -top $(TOP) -json $(JSON); stat"
+
+# Paso 2: Place and Route con NextPNR
 $(ASC): $(JSON) $(PCF)
 	nextpnr-ice40 --hx1k --package vq100 --json $(JSON) --pcf $(PCF) --asc $(ASC)
 
-# Step 3: Bitstream Generation
+# Paso 3: Generación del Bitstream
 $(BIN): $(ASC)
 	icepack $(ASC) $(BIN)
 
-# Step 4: Flash the Board
+# Paso 4: Cargar a la FPGA
 prog: $(BIN)
 	iceprog $(BIN)
 
-# Clean up generated files
+# Limpieza sin dependencia de Python
+ifeq ($(OS),Windows_NT)
 clean:
-	rm -f $(JSON) $(ASC) $(BIN)
+	powershell -NoProfile -Command "Remove-Item -Force -ErrorAction SilentlyContinue -Path '$(HEX_OUT)','$(JSON)','$(ASC)','$(BIN)'"
+else
+clean:
+	rm -f $(HEX_OUT) $(JSON) $(ASC) $(BIN)
+endif
