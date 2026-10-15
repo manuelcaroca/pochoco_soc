@@ -3,12 +3,11 @@
 # you may not use this file except in compliance with the License.
 # SPDX-License-Identifier: SHL-0.51
 
-# Cambia a sw/game.s cuando vayas a probar el juego final
+
 ASM_SRC := sw/game.s
 ASM_PY  := sw/assembler.py
 HEX_OUT := sw/game.hex
 
-# Configuración de la FPGA (Top debe ser game_top)
 TOP     := game_top
 PCF     := goboard.pcf
 PYTHON  := python

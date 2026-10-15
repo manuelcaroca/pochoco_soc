@@ -1,4 +1,4 @@
-# Juego de reflejos para Pochoco SoC (RV32E, registros x0-x15).
+# Juego de reflejos para Pochoco SoC
 #
 # MMIO de periféricos (base 0x80000000):
 #   +0x00 displays de 7 segmentos (dos dígitos hexadecimales empaquetados)

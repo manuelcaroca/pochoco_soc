@@ -26,12 +26,12 @@ module pochoco_periph (
     wire [5:0] off    = addr_i[7:2];
     wire       access = sel_i & req_i;
 
-    // Registros MMIO
+    // LEDs and raw digit registers
     reg [3:0]  led_q;
     reg [7:0]  digit_q;
     reg [31:0] cycle_cnt_q;
 
-    // 1. Contador libre de ciclos (32 bits @ 25 MHz)
+    // 1. Contador (32 bits @ 25 MHz)
     always @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni)
             cycle_cnt_q <= 32'd0;
@@ -39,38 +39,34 @@ module pochoco_periph (
             cycle_cnt_q <= cycle_cnt_q + 32'd1;
     end
 
-    // 2. Escritura MMIO
     always @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
             led_q   <= 4'b0;
             digit_q <= 8'b0;
         end else if (access & we_i) begin
             case (off)
-                6'd0: digit_q <= wdata_i[7:0]; // Offset 0x00 (Displays 7-seg)
-                6'd1: led_q   <= wdata_i[3:0]; // Offset 0x04 (LEDs)
+                6'd0: digit_q <= wdata_i[7:0]; 
+                6'd1: led_q   <= wdata_i[3:0]; 
                 default: ;
             endcase
         end
     end
 
-    // 3. Lectura MMIO (Sincrónica)
     always @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
             rdata_o <= 32'b0;
         end else if (access & ~we_i) begin
             case (off)
-                6'd0: rdata_o <= {24'b0, digit_q};     // Offset 0x00
-                6'd1: rdata_o <= {28'b0, led_q};       // Offset 0x04
-                6'd2: rdata_o <= {28'b0, btn_i};       // Offset 0x08 (Botones)
-                6'd3: rdata_o <= cycle_cnt_q;           // Offset 0x0C (Contador de Ciclos)
+                6'd0: rdata_o <= {24'b0, digit_q};     
+                6'd1: rdata_o <= {28'b0, led_q};     
+                6'd2: rdata_o <= {28'b0, btn_i};      
+                6'd3: rdata_o <= cycle_cnt_q;          
                 default: rdata_o <= 32'b0;
             endcase
         end
     end
 
-    assign leds_o = led_q;
-
-    // Decodificador Hex a 7-segmentos (Activo Alto)
+    // Hex to 7-segment decoder function
     function [6:0] hex2seg;
         input [3:0] hex;
         begin
@@ -95,6 +91,8 @@ module pochoco_periph (
             endcase
         end
     endfunction
+
+    assign leds_o = led_q;
 
     assign seg1_o = hex2seg(digit_q[7:4]);
     assign seg2_o = hex2seg(digit_q[3:0]);

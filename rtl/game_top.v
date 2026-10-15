@@ -1,6 +1,3 @@
-// Copyright 2026 Universidad de los Andes.
-// game_top.v — Módulo Top-Level para Go Board FPGA
-
 module game_top #(
     parameter MemFile = "sw/game.hex"
 ) (
@@ -17,7 +14,7 @@ module game_top #(
     output wire       o_Segment2_D, o_Segment2_E, o_Segment2_F, o_Segment2_G
 );
 
-    // Instancia del SoC Pochoco respetando sus nombres de puertos originales
+    // Instancia del SoC Pochoco 
     pochoco_soc #(
         .MemFile(MemFile)
     ) u_soc (
@@ -35,7 +32,6 @@ module game_top #(
         .o_Segment2_E(o_Segment2_E), .o_Segment2_F(o_Segment2_F),
         .o_Segment2_G(o_Segment2_G),
 
-        // Entradas SPI no utilizadas en el top nivel
         .i_SPI_SCLK(1'b0),
         .i_SPI_MOSI(1'b0),
         .i_SPI_CS_n(1'b1),
