@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: SHL-0.51
 
 
-ASM_SRC := sw/game.s
+ASM_SRC := sw/game_1.s
 ASM_PY  := sw/assembler.py
 HEX_OUT := sw/game.hex
 

@@ -1,4 +1,4 @@
-# Juego de reflejos para Pochoco SoC
+# Juego de reflejos para Pochoco SoC (RV32E, registros x0-x15).
 #
 # MMIO de periféricos (base 0x80000000):
 #   +0x00 displays de 7 segmentos (dos dígitos hexadecimales empaquetados)
@@ -122,7 +122,7 @@ wait_correct_release:
     lw   x4, 8(x2)
     bne  x4, x0, wait_correct_release
     addi x11, x0, 10
-    beq  x7, x11, show_average
+    beq  x7, x11, pause_before_average
     jal  x0, round_start
 
 # Una respuesta incorrecta muestra EE y reinicia la ronda sin borrar el puntaje.
@@ -135,6 +135,17 @@ wait_wrong_release:
     lw   x4, 8(x2)
     bne  x4, x0, wait_wrong_release
     jal  x0, round_start
+
+# Mantener visible el resultado de la décima ronda durante 2 segundos.
+pause_before_average:
+    lw   x5, 12(x2)             # Inicio de la pausa (al soltar el botón)
+    lui  x6, 0x2faf
+    addi x6, x6, 128           # 50.000.000 ciclos = 2 segundos a 25 MHz
+
+wait_average_pause:
+    lw   x9, 12(x2)
+    sub  x10, x9, x5           # Tiempo transcurrido (tolerante al wrap)
+    bltu x10, x6, wait_average_pause
 
 # Promedio = suma de las diez respuestas / 10, expresado en décimas.
 show_average:
