@@ -4,13 +4,14 @@
 # SPDX-License-Identifier: SHL-0.51
 
 
-ASM_SRC := sw/game_1.s
-ASM_PY  := sw/assembler.py
+ASM_SRC := sw/game.s
 HEX_OUT := sw/game.hex
 
-TOP     := game_top
-PCF     := goboard.pcf
-PYTHON  := python
+ASM_MANIFEST := assembler/Cargo.toml
+ASM_FILES := $(wildcard assembler/src/*.rs)
+
+TOP := game_top
+PCF := goboard.pcf
 
 # RTL Sources (Búsqueda recursiva de archivos .v)
 SRC     := $(wildcard ./rtl/*.v ./rtl/**/*.v)
@@ -25,8 +26,8 @@ BIN     := $(TOP).bin
 all: prog
 
 # Paso 0: Ensamblar código RISC-V a Hex
-$(HEX_OUT): $(ASM_SRC) $(ASM_PY)
-	$(PYTHON) $(ASM_PY) $(ASM_SRC) $(HEX_OUT)
+$(HEX_OUT): $(ASM_SRC) $(ASM_MANIFEST) $(ASM_FILES)
+	cargo run --quiet --release --manifest-path $(ASM_MANIFEST) -- $(ASM_SRC) $(HEX_OUT)
 
 # Paso 1: Síntesis con Yosys (Depende de sw/game.hex)
 $(JSON): $(HEX_OUT) $(SRC)
@@ -51,4 +52,5 @@ clean:
 else
 clean:
 	rm -f $(HEX_OUT) $(JSON) $(ASC) $(BIN)
+	cargo clean --manifest-path $(ASM_MANIFEST)
 endif

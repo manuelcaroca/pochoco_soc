@@ -3,11 +3,8 @@
 venv/
 .DS_Store
 
-# Python & Test Artifacts
-__pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
+#Cargo target
+/assembler/target/
 
 # FPGA Synthesis & Bitstream Artifacts (Yosys / nextpnr / icepack)
 *.json
