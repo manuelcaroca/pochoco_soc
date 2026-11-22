@@ -1,7 +1,7 @@
 # Agente Pochoco Trader para Espino RV32E.
 #
 # Regla: compara el precio actual con el promedio de los cinco precios
-# anteriores. H_compra = 7 y H_venta = 15 unidades de precio. Compra 63 si está
+# anteriores. H_compra = 7 y H_venta = 7 unidades de precio. Compra 63 si está
 # fuera del mercado y el precio supera el promedio por más de H_compra; vende
 # 63 si tiene acciones y cae bajo el promedio por más de H_venta. La FPGA limita
 # cada orden a la caja o a las acciones disponibles.
@@ -118,7 +118,7 @@ after_order:
     addi x11, x9, 35         # Suma + 5*H_compra
     bltu x11, x10, signal_high
 
-    addi x11, x0, 75         # Cinco veces el umbral de venta (5*15)
+    addi x11, x0, 35         # Cinco veces el umbral de venta (5*7)
     bltu x9, x11, choose_hold # Evitar underflow en suma - 5*H_venta
     sub  x11, x9, x11
     bltu x10, x11, signal_low
