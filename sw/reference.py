@@ -3,7 +3,7 @@
 #
 # Uso:
 #   python reference.py                -> corre con los umbrales por defecto
-#   python reference.py 7 7            -> compra 7, venta 7
+#   python reference.py 7 15           -> compra 7, venta 15
 #   python reference.py barrido        -> compara pares de 0 a 20
 
 import csv
@@ -16,7 +16,7 @@ COMISION = 5
 MAX_ACCIONES = 63
 VENTANA = 5
 UMBRAL_COMPRA = 7
-UMBRAL_VENTA = 7
+UMBRAL_VENTA = 15
 
 ARCHIVO_PROYECTO = Path(__file__).resolve().parent.parent
 ARCHIVO_SERIE = ARCHIVO_PROYECTO / "practica_meta.csv"
