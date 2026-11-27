@@ -9,7 +9,8 @@
 // - Nicolás Villegas <navillegas@miuandes.cl>
 
 module espino_core #(
-  parameter [31:0] BootAddr = 32'h0000_0000
+  parameter [31:0] BootAddr = 32'h0000_0000,
+  parameter integer P4_HYBRID_SHIFT = 0
 ) (
   input  wire        clk_i,
   input  wire        rst_ni,
@@ -58,7 +59,7 @@ module espino_core #(
     .instr_valid_id_o (instr_valid_id)
   );
 
-  espino_id_stage u_id (
+  espino_id_stage #(.P4_HYBRID_SHIFT(P4_HYBRID_SHIFT)) u_id (
     .clk_i          (clk_i),
     .rst_ni         (rst_ni),
     .instr_valid_i  (instr_valid_id),

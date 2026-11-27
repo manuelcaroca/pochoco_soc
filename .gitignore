@@ -22,3 +22,4 @@ sim/sim
 !practica_meta.csv
 !sw/resultados_reales/practica_meta_metricas_tick.csv
 !sw/resultados_reales/practica_meta_resultados_tick.csv
+__pycache__/

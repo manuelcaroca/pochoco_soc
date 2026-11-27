@@ -8,7 +8,7 @@
 // Authors:
 // - Nicolás Villegas <navillegas@miuandes.cl>
 
-module espino_alu (
+module espino_alu #(parameter integer P4_HYBRID_SHIFT = 0) (
   input  wire [3:0]  operator_i,
   input  wire [31:0] operand_a_i,
   input  wire [31:0] operand_b_i,
@@ -70,7 +70,18 @@ module espino_alu (
       ALU_SLT:  result_o = {31'b0, cmp_lt};
       ALU_SLTU: result_o = {31'b0, cmp_ltu};
       // Shifts disabled to save LUTs
-      // ALU_SLL:  result_o = operand_a_i << shamt;
+      // P4_HYBRID_SHIFT: sólo SLLI 2/3/5, operando sin signo de 8 bits.
+      ALU_SLL: begin
+        result_o = operand_a_i + operand_b_i;
+        if (P4_HYBRID_SHIFT != 0) begin
+          case (shamt)
+            5'd2: result_o = {22'b0, operand_a_i[7:0], 2'b0};
+            5'd3: result_o = {21'b0, operand_a_i[7:0], 3'b0};
+            5'd5: result_o = {19'b0, operand_a_i[7:0], 5'b0};
+            default: result_o = operand_a_i + operand_b_i;
+          endcase
+        end
+      end
       // ALU_SRL:  result_o = operand_a_i >> shamt;
       // ALU_SRA:  result_o = a_s >>> shamt;
       default:  result_o = operand_a_i + operand_b_i;

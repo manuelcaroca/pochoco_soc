@@ -1,0 +1,376 @@
+{
+  "hardware": {
+    "sw": {
+      "lut": 1009,
+      "bram": 12,
+      "lc": 1207,
+      "fmax": 43.29,
+      "bitstream": "bench_p4_final/trade_top.bin"
+    },
+    "fixed": {
+      "lut": 1023,
+      "bram": 12,
+      "lc": 1235,
+      "fmax": 46.19,
+      "bitstream": "bench_p4_final/trade_top_fixed.bin"
+    },
+    "compact": {
+      "lut": 1022,
+      "bram": 8,
+      "lc": 1232,
+      "fmax": 42.04,
+      "bitstream": "bench_p4_final/trade_top_compact.bin"
+    }
+  },
+  "mediciones": {
+    "adaptativa": {
+      "sw": {
+        "scale_events": 487,
+        "scale_instr": 1320,
+        "scale_cycles": 2640,
+        "useful_ops": 8285,
+        "hot_regions": [
+          [
+            "rango",
+            15306
+          ],
+          [
+            "esperar",
+            13694
+          ],
+          [
+            "mismo_modo",
+            9429
+          ]
+        ],
+        "profile_cycles": 77152,
+        "ticks": 737,
+        "ic": 46.43283582089552,
+        "ic_max": 58,
+        "cycles": 104.68385345997287,
+        "cycles_max": 129,
+        "cpi": 2.254522077087169,
+        "cpi_max": 2.3333333333333335,
+        "time_mean_us": 4.187354138398915,
+        "time_max_us": 5.16,
+        "total_cycles": 77152,
+        "engine": "iverilog"
+      },
+      "compact": {
+        "scale_events": 487,
+        "scale_instr": 487,
+        "scale_cycles": 974,
+        "useful_ops": 8285,
+        "hot_regions": [
+          [
+            "rango",
+            15306
+          ],
+          [
+            "esperar",
+            13732
+          ],
+          [
+            "mismo_modo",
+            9429
+          ]
+        ],
+        "profile_cycles": 75524,
+        "ticks": 737,
+        "ic": 45.32157394843962,
+        "ic_max": 53,
+        "cycles": 102.47489823609227,
+        "cycles_max": 119,
+        "cpi": 2.261062211843602,
+        "cpi_max": 2.3333333333333335,
+        "time_mean_us": 4.098995929443691,
+        "time_max_us": 4.76,
+        "total_cycles": 75524,
+        "engine": "iverilog"
+      },
+      "fixed": {
+        "scale_events": 487,
+        "scale_instr": 487,
+        "scale_cycles": 974,
+        "useful_ops": 8285,
+        "hot_regions": [
+          [
+            "rango",
+            15306
+          ],
+          [
+            "esperar",
+            13732
+          ],
+          [
+            "mismo_modo",
+            9429
+          ]
+        ],
+        "profile_cycles": 75524,
+        "ticks": 737,
+        "ic": 45.32157394843962,
+        "ic_max": 53,
+        "cycles": 102.47489823609227,
+        "cycles_max": 119,
+        "cpi": 2.261062211843602,
+        "cpi_max": 2.3333333333333335,
+        "time_mean_us": 4.098995929443691,
+        "time_max_us": 4.76,
+        "total_cycles": 75524,
+        "engine": "iverilog"
+      }
+    },
+    "meta": {
+      "sw": {
+        "scale_events": 0,
+        "scale_instr": 0,
+        "scale_cycles": 4,
+        "useful_ops": 175459,
+        "hot_regions": [
+          [
+            "esperar",
+            374056
+          ],
+          [
+            "modo",
+            311599
+          ],
+          [
+            "rango",
+            284155
+          ]
+        ],
+        "profile_cycles": 1782777,
+        "ticks": 20000,
+        "ic": 39.27975,
+        "ic_max": 57,
+        "cycles": 89.13885,
+        "cycles_max": 129,
+        "cpi": 2.2693334351669754,
+        "cpi_max": 2.3714285714285714,
+        "time_mean_us": 3.565554,
+        "time_max_us": 5.16,
+        "total_cycles": 1782777,
+        "engine": "iverilog"
+      },
+      "fixed": {
+        "scale_events": 0,
+        "scale_instr": 0,
+        "scale_cycles": 4,
+        "useful_ops": 175459,
+        "hot_regions": [
+          [
+            "esperar",
+            374056
+          ],
+          [
+            "modo",
+            311599
+          ],
+          [
+            "rango",
+            284155
+          ]
+        ],
+        "profile_cycles": 1782777,
+        "ticks": 20000,
+        "ic": 39.27975,
+        "ic_max": 57,
+        "cycles": 89.13885,
+        "cycles_max": 129,
+        "cpi": 2.2693334351669754,
+        "cpi_max": 2.3714285714285714,
+        "time_mean_us": 3.565554,
+        "time_max_us": 5.16,
+        "total_cycles": 1782777,
+        "engine": "iverilog"
+      },
+      "compact": {
+        "scale_events": 0,
+        "scale_instr": 0,
+        "scale_cycles": 4,
+        "useful_ops": 175459,
+        "hot_regions": [
+          [
+            "esperar",
+            374056
+          ],
+          [
+            "modo",
+            311599
+          ],
+          [
+            "rango",
+            284155
+          ]
+        ],
+        "profile_cycles": 1782777,
+        "ticks": 20000,
+        "ic": 39.27975,
+        "ic_max": 57,
+        "cycles": 89.13885,
+        "cycles_max": 129,
+        "cpi": 2.2693334351669754,
+        "cpi_max": 2.3714285714285714,
+        "time_mean_us": 3.565554,
+        "time_max_us": 5.16,
+        "total_cycles": 1782777,
+        "engine": "iverilog"
+      }
+    }
+  },
+  "isa": [
+    {
+      "variant": "sw",
+      "series": "practica_amd_2022_ene.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "fixed",
+      "series": "practica_amd_2022_ene.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "compact",
+      "series": "practica_amd_2022_ene.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "sw",
+      "series": "practica_amd_2022_may.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "fixed",
+      "series": "practica_amd_2022_may.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "compact",
+      "series": "practica_amd_2022_may.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "sw",
+      "series": "practica_apple_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "fixed",
+      "series": "practica_apple_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "compact",
+      "series": "practica_apple_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "sw",
+      "series": "practica_apple_2023.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "fixed",
+      "series": "practica_apple_2023.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "compact",
+      "series": "practica_apple_2023.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "sw",
+      "series": "practica_meta_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "fixed",
+      "series": "practica_meta_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "compact",
+      "series": "practica_meta_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "sw",
+      "series": "practica_netflix_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "fixed",
+      "series": "practica_netflix_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "compact",
+      "series": "practica_netflix_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "sw",
+      "series": "practica_netflix_2023.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "fixed",
+      "series": "practica_netflix_2023.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "compact",
+      "series": "practica_netflix_2023.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "sw",
+      "series": "practica_tesla_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "fixed",
+      "series": "practica_tesla_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "compact",
+      "series": "practica_tesla_2022.csv",
+      "ticks": 20000
+    },
+    {
+      "variant": "sw",
+      "series": "prueba_adaptativa.csv",
+      "ticks": 737
+    },
+    {
+      "variant": "fixed",
+      "series": "prueba_adaptativa.csv",
+      "ticks": 737
+    },
+    {
+      "variant": "compact",
+      "series": "prueba_adaptativa.csv",
+      "ticks": 737
+    },
+    {
+      "variant": "sw",
+      "series": "prueba_comprimida.csv",
+      "ticks": 2213
+    },
+    {
+      "variant": "fixed",
+      "series": "prueba_comprimida.csv",
+      "ticks": 2213
+    },
+    {
+      "variant": "compact",
+      "series": "prueba_comprimida.csv",
+      "ticks": 2213
+    }
+  ],
+  "seleccion": "compact"
+}

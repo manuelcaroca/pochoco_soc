@@ -10,7 +10,8 @@
 
 module pochoco_soc #(
   parameter NumWords   = 512,
-  parameter MemFile    = ""
+  parameter MemFile    = "",
+  parameter integer P4_HYBRID_SHIFT = 0
 ) (
   input  wire        i_Clk,
 
@@ -47,7 +48,7 @@ module pochoco_soc #(
   wire [3:0]  data_be;
   wire [31:0] data_addr, data_wdata, data_rdata;
 
-  espino_core #(.BootAddr(32'h0000_0000)) u_core (
+  espino_core #(.BootAddr(32'h0000_0000), .P4_HYBRID_SHIFT(P4_HYBRID_SHIFT)) u_core (
     .clk_i         (clk),
     .rst_ni        (rst_ni),
     .instr_req_o   (instr_req),

@@ -1,60 +1,69 @@
-# Pochoco SoC & Espino Core
+# Pochoco Trader — estrategia híbrida, Proyecto 4
 
-> Meet Pochoco SoC and Espino Core. Inspired by the native flora of the Pochoco trails, it is an entry-level, highly efficient architecture designed to flourish in resource-constrained environments.
+Versión base auditada: `82c0cad21d62519c701f3cf382397c8757df95ba` (rama `Proyecto-4`). El código original `sw/trade.s` no se modifica. La referencia correcta es `sw/hibrido.py`, que importa las funciones de contabilidad de `sw/reference.py`; no ejecutar `reference.py` como estrategia híbrida.
 
-![Pochoco SoC Architecture](pochoco_soc.svg)
+## Cierre reproducible
 
-Welcome to the repository! This project contains the RTL for a custom 32-bit processor and its surrounding System-on-Chip (SoC) designed for FPGA deployment. The design is kept straightforward to help explore and understand computer architecture fundamentals.
-
-This is meant to be forked, not just cloned. You'll be poking around the RTL, so make it your own, we won't judge (we might even be a little proud).
-
-## Repository Structure
-
-The hardware is written in Verilog and divided into these main categories:
-
-* **The Espino Core**: The central processing unit. It includes all standard pipeline stages like instruction fetch, instruction decode, an ALU for execution, a register file, a load/store unit for memory operations, and a pipeline controller. It implements [RV32E](https://docs.riscv.org/reference/isa/v20260120/unpriv/rv32.html) with a catch you might want to check out the code for.
-* **The Pochoco SoC**: The top-level system wrapper. It connects the CPU core to a unified instruction/data RAM, physical board peripherals (like LEDs, switches, and displays), and an external SPI slave interface.
-* **Build Files**: Constraints to map the design to the physical FPGA pins, and automation scripts for synthesis, routing, and flashing using an open-source toolchain.
-
-## Memory Map
-
-The SoC routes memory and data requests using a hardcoded address decoding scheme based on the highest bits of the 32-bit address.
-
-* **`0x0000_0000` - Unified RAM**: The shared memory space for both instructions and data.
-* **`0x8000_0000` - Board Peripherals**: Memory-mapped I/O for the physical board.
-  * `Offset 0x00`: 7-Segment Displays
-  * `Offset 0x04`: LEDs
-  * `Offset 0x08`: Button Inputs
-* **`0x8001_0000` - SPI Slave**: Custom SPI interface routing.
-  * `Offset 0x00`: SPI Status (Chip Select state, New Data flag)
-  * `Offset 0x04`: Received "Price" byte (from external master)
-  * `Offset 0x08`: "Decision" byte (written by CPU to transmit)
-
-Dive into the source code to see exactly how these components and connections are built under the hood!
-
-## How to Build
-
-To synthesize and build the project, you will need the open-source FPGA toolchain.
-
-1. Install the tools by following the instructions at the [oss-cad-suite-build repository](https://github.com/yosyshq/oss-cad-suite-build).
-2. Once installed, ~~blindly copy-paste~~ (we strongly encourage reading the Makefile first to make sure we aren't deleting your home directory) the following command in the project root to generate and program the final bitstream:
+Desde la raíz, con Python 3, Rust/Cargo, Yosys, nextpnr-ice40, icepack, Icarus Verilog (o Verilator reciente):
 
 ```bash
-make all
+export YOSYS_CELLS_SIM=/usr/share/yosys/ice40/cells_sim.v
+python3 -u tools/cierre_p4.py --jobs 3
 ```
 
-## Software
+El banco detecta Verilator y, si falla, reintenta con Icarus; para usar Icarus directamente, añadir `--engine iverilog`. `--preparar` sólo genera fuentes; `--solo-isa` verifica los binarios ensamblados sin simular RTL ni sintetizar. El script está diseñado para un checkout de la versión auditada, no para mezclarlo con la rama de la estrategia robusta anterior.
 
-The `sw/` folder holds the RV32E assembly example programs that run on the Espino Core (`blink.s`, `7seg.s`, `buttons_leds.s`), plus a `Makefile` to assemble them into the `.hex` files the RTL loads at boot via `$readmemh`.
+Produce en `bench_p4_final/` los bitstreams, logs de herramientas, CSV de decisiones, métricas por tick, perfiles PC, `resumen.json` y `versiones.txt`. `BITSTREAM_ELEGIDO.txt` existe únicamente si una variante pasó síntesis y ambas simulaciones. El script no programa la placa ni hace push. Si se produce un fallo, revisar `errores.txt` y los logs; los resultados que sí pasaron quedan registrados. No confundir resultados de las versiones anteriores.
 
-You'll need a RISC-V toolchain on your `PATH` (`riscv64-unknown-elf-{as,ld,objcopy}` on Debian/Ubuntu/WSL via `sudo apt install gcc-riscv64-unknown-elf`, or `brew install riscv64-unknown-elf-gcc` on macOS). If your toolchain uses a different prefix, override it on the command line rather than editing the Makefile:
+### Referencia Python
 
 ```bash
-cd sw
-make blink                        # assembles blink.s -> blink.hex
-make PREFIX=riscv64-elf- blink    # if your toolchain uses a different prefix
+python3 sw/hibrido.py practica_meta.csv
+python3 sw/hibrido.py series/practica_tesla_2022.csv
 ```
 
-Drop a new `<name>.s` file in `sw/` and `make <name>` picks it up automatically, no `Makefile` changes needed. Don't forget to change the MemFile in pochoco_soc.v.
+Todas las decisiones usan sólo precios ya recibidos; los CSV son entradas del testbench y no se cargan en la FPGA.
 
-**CATCH:** The core implements [RV32E](https://docs.riscv.org/reference/isa/v20260120/unpriv/rv32.html), with one thing worth knowing: shift instructions (`SLL`/`SRL`/`SRA`/`SLLI`/`SRLI`/`SRAI`) are decoded correctly but disabled in the ALU to save LUTs on the target FPGA, so they currently execute as `ADD` instead. Avoid shifts in your assembly, or design your own shifter...
+### Ensamblado manual (después de preparar las variantes)
+
+```bash
+cargo run --quiet --release --manifest-path assembler/Cargo.toml -- sw/trade.s sw/trade.hex
+cargo run --quiet --release --manifest-path assembler/Cargo.toml -- sw/trade_hybrid_fixed.s sw/trade_hybrid_fixed.hex
+cargo run --quiet --release --manifest-path assembler/Cargo.toml -- sw/trade_hybrid_compact.s sw/trade_hybrid_compact.hex
+```
+
+### Síntesis manual (ejemplo COMPACT)
+
+```bash
+yosys -p 'read_verilog rtl/*.v rtl/espino_core/*.v; synth_ice40 -top trade_top_compact -json compact.json; stat'
+nextpnr-ice40 --hx1k --package vq100 --freq 25 --json compact.json --pcf goboard.pcf --asc compact.asc
+icepack compact.asc compact.bin
+```
+
+SW usa `trade_top`, FIXED `trade_top_fixed`, COMPACT `trade_top_compact`. FIXED añade SLLI 2/3/5 especializado en diferencias de precios de 8 bits; COMPACT suma RAM de 128 palabras. No es un shifter RV32E general. El acumulador se ubica en 508 y el código ocupa 119 palabras.
+
+### Testbench manual (COMPACT, serie Meta)
+
+```bash
+mkdir -p bench_p4_final/manual
+iverilog -g2012 -s tb_p4_final -DP4_COMPACT -Ptb_p4_final.NTICKS=20000 -o /tmp/p4.vvp "$YOSYS_CELLS_SIM" rtl/*.v rtl/espino_core/*.v tb_p4_final.sv
+vvp -n /tmp/p4.vvp +SERIES=practica_meta.csv +DECISIONS=bench_p4_final/manual/decisiones.csv +METRICS=bench_p4_final/manual/metricas.csv +PCSTATS=bench_p4_final/manual/pc.csv
+```
+
+Para SW, retirar `-DP4_COMPACT`; para FIXED, cambiarlo por `-DP4_FIXED`. El banco automatizado es preferible porque compara cada decisión y la cartera contra Python, incluso el último byte escrito.
+
+### Programar Go Board (sólo después de validar)
+
+```bash
+cat bench_p4_final/BITSTREAM_ELEGIDO.txt
+iceprog "$(cat bench_p4_final/BITSTREAM_ELEGIDO.txt)"
+iceprog -c "$(cat bench_p4_final/BITSTREAM_ELEGIDO.txt)"
+```
+
+No usar `make prog` para programar una variante elegida: ese objetivo original usa SW. En PowerShell, `usbipd list`, `usbipd bind --busid <BUSID>` (administrador, si aún no está compartido), `usbipd attach --wsl --busid <BUSID>`; en WSL, `lsusb` debe mostrar el FTDI (p. ej. 0403:6010).
+
+### Evidencia e informe externo
+
+El banco escribe el fragmento LaTeX en `../<nombre-del-checkout>_informe/seccion_3_3.txt`, fuera del repositorio. Copiar al informe existente; no se incorpora ningún `.tex` a Git. Para el roofline, añadir `\usepackage{pgfplots}` y `\pgfplotsset{compat=1.18}` al preámbulo de Overleaf. Las versiones reales están en `bench_p4_final/versiones.txt`. Los techos roofline son teóricos y se definen para el tráfico nominal de instrucciones del escalado, no el ancho de banda medido de RAM.
+
+Conservar `resumen.json`, `versiones.txt`, los CSV de decisiones, métricas y perfiles, y los logs de síntesis y simulación. No agregar los directorios `obj_*`, netlists, ejecutables de simulación ni bitstreams generados. Los CSV de las series sirven exclusivamente de entradas de prueba, nunca de memoria de precios del agente.

@@ -1,0 +1,18 @@
+WARNING: rtl/pochoco_ram.v:36: $readmemh(sw/trade.hex): Not enough words in the file for the requested range [0:511].
+Patrimonio final:          56538
+Ordenes ejecutadas:        18
+Perdida maxima:            1154
+No operar:                 10000
+Comprar y mantener:        3795
+Peor caso precio->decision: 129 ciclos (disponibles: 2262)
+Promedio por tick: IC 46.433, ciclos 104.684, CPI 2.2551, tiempo 4187.35 ns
+Max IC: 58 en tick 133; max ciclos/tiempo: 129 / 5160 ns en tick 133
+Max CPI: 2.333 en tick 236
+Detalle por tick en decisiones.csv
+Metricas por tick en sw/resultados_reales/practica_meta_metricas_tick.csv
+PASS MISO sin valores X
+PASS el programa escribe DECISION
+PASS el programa lee todos los precios
+PASS la decision llega antes del siguiente tick
+Testbenchs aprobados: 4/4
+tb_p4_final.sv:226: $finish called at 73704000000 (1ps)
